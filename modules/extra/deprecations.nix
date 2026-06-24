@@ -378,5 +378,51 @@ in {
     [
       (mkRenamedOptionModule ["vim" "languages" "typescript" "treesitter" "tsxPackage"] ["vim" "languages" "tsx" "treesitter" "package"])
     ]
+
+    # 2026-06-02
+    [
+      (mkRemovedOptionModule ["vim" "filetree" "nvimTree" "systemOpen" "args"] ''
+        nvim-tree.lua removed system_open and now uses Neovim's vim.ui.open().
+      '')
+      (mkRemovedOptionModule ["vim" "filetree" "nvimTree" "systemOpen" "cmd"] ''
+        nvim-tree.lua removed system_open and now uses Neovim's vim.ui.open().
+      '')
+    ]
+
+    # 2026-06-12
+    [
+      (mkRemovedOptionModule ["vim" "languages" "sql" "dialect"] ''
+        This option interfered with project level configurations.
+        Linters can still be customized via `vim.diagnostics.nvim-lint.<name>.args`
+      '')
+    ]
+
+    # 2026-06-13
+    [
+      (mkRemovedOptionModule ["vim" "languages" "clang" "dap" "package"] ''
+        Please use `vim.debugger.nvim-dap.adapters.<debugger>.command` instead.
+      '')
+      (mkRemovedOptionModule ["vim" "languages" "zig" "dap" "package"] ''
+        Please use `vim.debugger.nvim-dap.adapters.<debugger>.command` instead.
+      '')
+      (mkRemovedOptionModule ["vim" "languages" "python" "dap" "package"] ''
+        Please use `vim.debugger.nvim-dap.adapters.<debugger>.command` instead.
+        Also see `vim.debugger.nvim-dap.configurations.python` if you want
+        to use a custom python/additional libraries as your debuggee
+      '')
+      (mkRemovedOptionModule ["vim" "languages" "odin" "dap" "package"] ''
+        Please use `vim.debugger.nvim-dap.adapters.<debugger>.command` instead.
+      '')
+      (mkRemovedOptionModule ["vim" "languages" "java" "dap" "package"] ''
+        Please use `vim.debugger.nvim-dap.adapters.<debugger>.command` instead.
+      '')
+      (mkRenamedOptionModule
+        ["vim" "languages" "php" "dap" "xdebug" "adapter"]
+        ["vim" "debugger" "nvim-dap" "adapters" "xdebug"])
+      (mkRemovedOptionModule ["vim" "languages" "php" "dap" "xdebug" "port"] ''
+        Please use a custom `vim.debugger.nvim-dap.configurations.php`
+        instead.
+      '')
+    ]
   ];
 }

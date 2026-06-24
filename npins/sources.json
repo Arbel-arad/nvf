@@ -423,6 +423,19 @@
       "url": "https://github.com/Decodetalkers/csharpls-extended-lsp.nvim/archive/be8093d19af1538aad9ee77dc5589e55b083967a.tar.gz",
       "hash": "sha256-MDr3n9LaQ/YTHD7egDohQ7YmT2+itWXNoMLigmZp3KQ="
     },
+    "csvview-nvim": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "hat0uma",
+        "repo": "csvview.nvim"
+      },
+      "branch": "main",
+      "submodules": false,
+      "revision": "5c22774c3ecc7f8883af5d143b366e45b1f0875d",
+      "url": "https://github.com/hat0uma/csvview.nvim/archive/5c22774c3ecc7f8883af5d143b366e45b1f0875d.tar.gz",
+      "hash": "sha256-JJZCrLhUzausIs61UfsE4472B1KzgZyI+BlbZH+gUn0="
+    },
     "dashboard-nvim": {
       "type": "Git",
       "repository": {
@@ -2407,6 +2420,22 @@
       "revision": "57234893ca374c8e401cce1f931180d314e13eac",
       "url": "https://api.github.com/repos/withastro/prettier-plugin-astro/tarball/refs/tags/v0.14.1",
       "hash": "sha256-XGPz4D2UKOonet0tX3up5mCxw3/69XYPScxb9l7nzpE="
+    },
+    "prettier-plugin-pug": {
+      "type": "GitRelease",
+      "repository": {
+        "type": "GitHub",
+        "owner": "prettier",
+        "repo": "plugin-pug"
+      },
+      "pre_releases": false,
+      "version_upper_bound": null,
+      "release_prefix": null,
+      "submodules": false,
+      "version": "3.4.2",
+      "revision": "33c86341f0addf48b09968f2545efcf18331d046",
+      "url": "https://api.github.com/repos/prettier/plugin-pug/tarball/refs/tags/3.4.2",
+      "hash": "sha256-4CsKMj8Xnq+dlGzLAG2hV8jTCMYBYhaV/uoKAfztSGs="
     },
     "prettier-plugin-svelte": {
       "type": "GitRelease",
