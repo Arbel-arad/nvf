@@ -4,7 +4,6 @@
   pkgs,
   ...
 }: let
-  inherit (lib.meta) getExe;
   inherit (lib.modules) mkIf;
   inherit (lib.nvim.types) mkLspPresetEnableOption;
 
@@ -17,13 +16,11 @@
     "cmake"
     "cpp"
     "cs"
-    "daml"
     "dart"
     "gitcommit"
     "go"
     "haskell"
     "html"
-    "ink"
     "java"
     "javascript"
     "javascriptreact"
@@ -40,13 +37,17 @@
   ];
 in {
   options.vim.lsp.presets.harper = {
-    enable = mkLspPresetEnableOption "harper" "Harper" filetypes;
+    enable = mkLspPresetEnableOption {
+      option = "harper";
+      display = "Harper";
+      defaultFiletypes = filetypes;
+    };
   };
 
   config = mkIf cfg.enable {
     vim.lsp.servers.harper = {
       enable = true;
-      cmd = [(getExe pkgs.harper) "--stdio"];
+      cmd = ["${pkgs.harper}/bin/harper-ls" "--stdio"];
       root_markers = [".git" ".harper-dictionary.txt"];
       # Make Harper shut up in the logs, that its key is required, when nothing is configured.
       settings.harper-ls = {};

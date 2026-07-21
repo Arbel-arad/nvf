@@ -4,7 +4,6 @@
   lib,
   ...
 }: let
-  inherit (builtins) attrNames;
   inherit (lib.options) literalExpression mkEnableOption mkOption;
   inherit (lib.modules) mkIf mkMerge;
   inherit (lib.types) bool enum listOf;
@@ -12,20 +11,20 @@
   inherit (lib.lists) optional;
   inherit (lib.nvim.types) mkGrammarOption deprecatedSingleOrListOf;
   inherit (lib.nvim.dag) entryAnywhere;
-  inherit (lib.nvim.attrsets) mapListToAttrs;
 
   cfg = config.vim.languages.html;
 
   defaultServers = ["superhtml"];
-  servers = ["superhtml" "emmet-ls" "angular-language-server" "stimulus-language-server"];
+  servers = [
+    "superhtml"
+    "emmet-ls"
+    "stimulus-language-server"
+    # deprecated
+    "angular-language-server"
+  ];
 
   defaultFormat = ["superhtml"];
-  formats = {
-    superhtml = {
-      command = "${pkgs.superhtml}/bin/superhtml";
-      args = ["fmt" "-"];
-    };
-  };
+  formats = ["superhtml" "biome" "prettier" "deno"];
 
   defaultDiagnosticsProvider = ["htmlhint"];
   diagnosticsProviders = ["htmlhint"];
@@ -70,7 +69,7 @@ in {
         };
 
       type = mkOption {
-        type = deprecatedSingleOrListOf "vim.language.html.format.type" (enum (attrNames formats));
+        type = deprecatedSingleOrListOf "vim.language.html.format.type" (enum formats);
         default = defaultFormat;
         description = "HTML formatter to use";
       };
@@ -112,7 +111,7 @@ in {
       vim.lsp = {
         presets = genAttrs cfg.lsp.servers (_: {enable = true;});
         servers = genAttrs cfg.lsp.servers (_: {
-          filetypes = ["html" "shtml" "xhtml" "htm"];
+          filetypes = ["html" "xhtml"];
         });
       };
     })
@@ -120,15 +119,8 @@ in {
     (mkIf (cfg.format.enable && !cfg.lsp.enable) {
       vim.formatter.conform-nvim = {
         enable = true;
-        setupOpts = {
-          formatters_by_ft.html = cfg.format.type;
-          formatters =
-            mapListToAttrs (name: {
-              inherit name;
-              value = formats.${name};
-            })
-            cfg.format.type;
-        };
+        presets = genAttrs cfg.format.type (_: {enable = true;});
+        setupOpts.formatters_by_ft.html = cfg.format.type;
       };
     })
 
