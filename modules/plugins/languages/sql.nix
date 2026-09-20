@@ -4,11 +4,12 @@
   lib,
   ...
 }: let
+  inherit (builtins) elem;
   inherit (lib.options) mkEnableOption mkOption literalExpression;
   inherit (lib) genAttrs;
   inherit (lib.modules) mkIf mkMerge;
-  inherit (lib.types) enum package listOf;
-  inherit (lib.nvim.types) deprecatedSingleOrListOf;
+  inherit (lib.types) enum listOf;
+  inherit (lib.nvim.types) mkGrammarOption;
 
   cfg = config.vim.languages.sql;
 
@@ -16,7 +17,7 @@
   servers = ["sqls"];
 
   defaultFormat = ["sqlfluff"];
-  formats = ["sqlfluff" "sqruff"];
+  formats = ["sqlfluff" "sqruff" "injected"];
 
   defaultDiagnosticsProvider = ["sqlfluff"];
   diagnosticsProviders = ["sqlfluff" "sqruff"];
@@ -32,11 +33,7 @@ in {
           defaultText = literalExpression "config.vim.languages.enableTreesitter";
         };
 
-      package = mkOption {
-        type = package;
-        default = pkgs.vimPlugins.nvim-treesitter.grammarPlugins.sql;
-        description = "SQL treesitter grammar to use";
-      };
+      package = mkGrammarOption pkgs "sql";
     };
 
     lsp = {
@@ -63,7 +60,7 @@ in {
         };
 
       type = mkOption {
-        type = deprecatedSingleOrListOf "vim.language.sql.format.type" (enum formats);
+        type = listOf (enum formats);
         default = defaultFormat;
         description = "SQL formatter to use";
       };
@@ -83,12 +80,42 @@ in {
         description = "extra SQL diagnostics providers";
       };
     };
+
+    extensions = {
+      sqls-nvim.enable = mkEnableOption "Extended SQL LSP support for SQLS";
+    };
   };
 
   config = mkIf cfg.enable (mkMerge [
     (mkIf cfg.treesitter.enable {
-      vim.treesitter.enable = true;
-      vim.treesitter.grammars = [cfg.treesitter.package];
+      vim.treesitter = {
+        enable = true;
+        grammars = [cfg.treesitter.package];
+        queries = [
+          # Sets some common highlight groups, ensuring that SQL looks correct in more injections
+          {
+            type = "highlights";
+            filetypes = ["sql"];
+            loadtype = "extends";
+            query = ''
+              (identifier) @variable
+
+              (parameter) @attribute
+              (#eq? @attribute "?")
+            '';
+          }
+          # Special comments for some SQL tools
+          {
+            type = "highlights";
+            filetypes = ["sql"];
+            loadtype = "extends";
+            query = ''
+              ((comment) @attribute
+                (#match? @attribute "^--(bun:split| \\+goose)"))
+            '';
+          }
+        ];
+      };
     })
 
     (mkIf cfg.lsp.enable {
@@ -120,6 +147,18 @@ in {
           linters_by_ft.sql = cfg.extraDiagnostics.types;
         };
       };
+    })
+
+    (mkIf cfg.extensions.sqls-nvim.enable {
+      assertions = [
+        {
+          assertion = cfg.lsp.enable && elem "sqls" cfg.lsp.servers;
+          message = ''
+            `vim.languages.sql.extensions.sqls-nvim.enable` requires `vim.languages.sql.lsp.enable` to be enabled and "sqls" to be included in `vim.languages.sql.lsp.servers`.
+          '';
+        }
+      ];
+      vim.startPlugins = ["sqls-nvim"];
     })
   ]);
 }

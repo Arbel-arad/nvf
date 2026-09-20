@@ -8,7 +8,7 @@
   inherit (lib.modules) mkIf mkMerge;
   inherit (lib.types) enum listOf;
   inherit (lib) genAttrs;
-  inherit (lib.nvim.types) mkGrammarOption deprecatedSingleOrListOf;
+  inherit (lib.nvim.types) mkGrammarOption;
 
   cfg = config.vim.languages.nim;
 
@@ -16,7 +16,7 @@
   servers = ["nimlsp"];
 
   defaultFormat = ["nimpretty"];
-  formats = ["nimpretty"];
+  formats = ["nimpretty" "injected"];
 in {
   options.vim.languages.nim = {
     enable = mkEnableOption "Nim language support";
@@ -54,7 +54,7 @@ in {
           defaultText = literalExpression "config.vim.languages.enableFormat";
         };
       type = mkOption {
-        type = deprecatedSingleOrListOf "vim.language.nim.format.type" (enum formats);
+        type = listOf (enum formats);
         default = defaultFormat;
         description = "Nim formatter to use";
       };
@@ -65,7 +65,7 @@ in {
     {
       assertions = [
         {
-          assertion = !pkgs.stdenv.isDarwin;
+          assertion = !pkgs.stdenv.hostPlatform.isDarwin;
           message = "Nim language support is only available on Linux";
         }
       ];

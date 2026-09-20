@@ -1,8 +1,15 @@
 {
+  # This stub is for supporting the conform builtin injected formatter
+  options.vim.formatter.conform-nvim.presets.injected = {
+    _type = "option";
+    default = {};
+    internal = true;
+  };
   imports = [
     ./alejandra.nix
     ./asmfmt.nix
     ./astyle.nix
+    ./bean-format.nix
     ./biome.nix
     ./black.nix
     ./cabal-fmt.nix
@@ -11,11 +18,13 @@
     ./deno.nix
     ./djlint.nix
     ./dockerfmt.nix
+    ./emacs.nix
     ./fantomas.nix
     ./fish-indent.nix
     ./floskell.nix
     ./format-r.nix
     ./fourmolu.nix
+    ./gawk.nix
     ./gersemi.nix
     ./gofmt.nix
     ./gofumpt.nix
@@ -47,6 +56,7 @@
     ./ruff.nix
     ./rumdl.nix
     ./rustfmt.nix
+    ./sbcl.nix
     ./shfmt.nix
     ./smlfmt.nix
     ./sqlfluff.nix
@@ -59,6 +69,7 @@
     ./terraform.nix
     ./tex-fmt.nix
     ./tombi.nix
+    ./ts-query-ls.nix
     ./typstyle.nix
   ];
 }

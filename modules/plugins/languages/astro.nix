@@ -6,8 +6,8 @@
 }: let
   inherit (lib.options) mkEnableOption mkOption literalExpression;
   inherit (lib.modules) mkIf mkMerge;
-  inherit (lib.types) enum coercedTo listOf;
-  inherit (lib.nvim.types) mkGrammarOption deprecatedSingleOrListOf enumWithRename;
+  inherit (lib.types) enum listOf;
+  inherit (lib.nvim.types) mkGrammarOption;
   inherit (lib) genAttrs elem;
 
   cfg = config.vim.languages.astro;
@@ -16,19 +16,10 @@
   servers = ["astro-language-server" "emmet-ls"];
 
   defaultFormat = ["prettier"];
-  formats = ["prettier" "biome" "biome-check" "biome-organize-imports" "deno"];
+  formats = ["prettier" "biome" "biome-check" "biome-organize-imports" "deno" "injected"];
 
   defaultDiagnosticsProvider = ["eslint_d"];
   diagnosticsProviders = ["eslint_d"];
-
-  formatType =
-    deprecatedSingleOrListOf
-    "vim.languages.astro.format.type"
-    (coercedTo (enum ["prettierd"]) (_:
-      lib.warn
-      "vim.languages.astro.format.type: prettierd is deprecated, use prettier instead"
-      "prettier")
-    (enum formats));
 in {
   options.vim.languages.astro = {
     enable = mkEnableOption "Astro language support";
@@ -52,12 +43,7 @@ in {
           defaultText = literalExpression "config.vim.lsp.enable";
         };
       servers = mkOption {
-        type = listOf (enumWithRename
-          "vim.languages.astro.lsp.servers"
-          servers
-          {
-            astro = "astro-language-server";
-          });
+        type = listOf (enum servers);
         default = defaultServers;
         description = "Astro LSP server to use";
       };
@@ -72,7 +58,7 @@ in {
         };
 
       type = mkOption {
-        type = formatType;
+        type = listOf (enum formats);
         default = defaultFormat;
         description = "Astro formatter to use";
       };

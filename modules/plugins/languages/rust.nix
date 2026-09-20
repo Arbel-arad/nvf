@@ -6,7 +6,7 @@
 }: let
   inherit (lib.modules) mkIf mkMerge;
   inherit (lib.options) mkOption mkEnableOption literalMD literalExpression;
-  inherit (lib.meta) getExe;
+  inherit (lib.meta) getExe getExe';
   inherit (lib.attrsets) attrNames genAttrs;
   inherit (lib.lists) flatten;
   inherit (lib.generators) mkLuaInline;
@@ -14,7 +14,7 @@
   inherit (lib.types) bool listOf enum int str;
   inherit (lib.nvim.dag) entryAfter;
   inherit (lib.nvim.lua) toLuaObject;
-  inherit (lib.nvim.types) mkGrammarOption mkPluginSetupOption deprecatedSingleOrListOf enumWithRename;
+  inherit (lib.nvim.types) mkGrammarOption mkPluginSetupOption;
 
   cfg = config.vim.languages.rust;
 
@@ -22,7 +22,7 @@
   defaultServers = ["rust-analyzer"];
 
   defaultFormat = ["rustfmt"];
-  formats = ["rustfmt"];
+  formats = ["rustfmt" "injected"];
 
   defaultDebugger = ["codelldb"];
   dapConfigurations = {
@@ -106,7 +106,7 @@ in {
 
       type = mkOption {
         description = "Rust formatter to use";
-        type = deprecatedSingleOrListOf "vim.language.rust.format.type" (enum formats);
+        type = listOf (enum formats);
         default = defaultFormat;
       };
     };
@@ -121,11 +121,7 @@ in {
 
       debugger = mkOption {
         description = "Rust debugger to use.";
-        type =
-          deprecatedSingleOrListOf "vim.languages.rust.dap.debugger"
-          (enumWithRename "vim.languages.rust.dap.debugger" (attrNames dapConfigurations) {
-            "lldb-dap" = "lldb";
-          });
+        type = listOf (enum (attrNames dapConfigurations));
         default = defaultDebugger;
       };
     };
@@ -257,7 +253,7 @@ in {
                   mkLuaInline ''
                     {
                       type = "executable",
-                      command = "${pkgs.lldb}/bin/lldb-dap",
+                      command = "${getExe' pkgs.lldb "lldb-dap"}",
                       name = "rustacean_lldb",
                     }''
                 else let
@@ -416,7 +412,7 @@ in {
       ];
     })
 
-    (mkIf cfg.extensions.crates-nvim.enable {
+    (mkIf cfg.extensions.ferris-nvim.enable {
       vim.lazy.plugins.ferris-nvim = {
         package = "ferris-nvim";
         setupModule = "ferris";

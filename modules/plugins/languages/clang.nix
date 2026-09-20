@@ -12,7 +12,6 @@
   inherit (lib.generators) mkLuaInline;
   inherit (lib.nvim.types) mkGrammarOption;
   inherit (lib.nvim.dag) entryAfter;
-  inherit (lib.nvim.types) deprecatedSingleOrListOf enumWithRename;
 
   cfg = config.vim.languages.clang;
 
@@ -43,10 +42,10 @@
   };
 
   defaultFormat = ["clang-format"];
-  formats = ["clang-format" "indent" "astyle"];
+  formats = ["clang-format" "indent" "astyle" "injected"];
 
-  defaultDiagnosticsProvider = ["cpplint"];
-  diagnosticsProviders = ["cpplint"];
+  defaultDiagnosticsProvider = ["clangtidy"];
+  diagnosticsProviders = ["cpplint" "clangtidy"];
 in {
   options.vim.languages.clang = {
     enable = mkEnableOption "C/C++ language support";
@@ -95,11 +94,7 @@ in {
         };
       debugger = mkOption {
         description = "clang debugger to use";
-        type =
-          deprecatedSingleOrListOf "vim.languages.clang.dap.debugger"
-          (enumWithRename "vim.languages.clang.dap.debugger" (attrNames dapConfigurations) {
-            lldb-vscode = "lldb";
-          });
+        type = listOf (enum (attrNames dapConfigurations));
         default = defaultDebugger;
       };
     };

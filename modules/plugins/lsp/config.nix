@@ -146,15 +146,8 @@ in {
           ${mkBinding mappings.toggleFormatOnSave "function() vim.b.disableFormatSave = not vim.b.disableFormatSave end"}
         end
 
-        ${optionalString config.vim.ui.breadcrumbs.enable ''local navic = require("nvim-navic")''}
         default_on_attach = function(client, bufnr)
           attach_keymaps(client, bufnr)
-          ${optionalString config.vim.ui.breadcrumbs.enable ''
-          -- let navic attach to buffers
-          if client.server_capabilities.documentSymbolProvider then
-            navic.attach(client, bufnr)
-          end
-        ''}
         end
 
         local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -215,7 +208,56 @@ in {
         ''}
 
         ${optionalString usingBlinkCmp ''
-          capabilities = require('blink.cmp').get_lsp_capabilities()
+          -- HACK: copied from blink.cmp so the plugin can remain lazy-loaded. Biding our
+          -- time until dynamic registration comes to save us (i.e. blink v2)
+          capabilities = {
+            textDocument = {
+              completion = {
+                completionItem = {
+                  snippetSupport = true,
+                  commitCharactersSupport = false,
+                  documentationFormat = {
+                    "markdown",
+                    "plaintext",
+                  },
+                  deprecatedSupport = true,
+                  preselectSupport = false,
+                  tagSupport = {
+                    valueSet = {
+                      1, -- Deprecated
+                    },
+                  },
+                  insertReplaceSupport = true,
+                  resolveSupport = {
+                    properties = {
+                      "documentation",
+                      "detail",
+                      "additionalTextEdits",
+                      "command",
+                      "data",
+                    },
+                  },
+                  insertTextModeSupport = {
+                    valueSet = {
+                      1, -- asIs
+                    },
+                  },
+                  labelDetailsSupport = true,
+                },
+                completionList = {
+                  itemDefaults = {
+                    "commitCharacters",
+                    "editRange",
+                    "insertTextFormat",
+                    "insertTextMode",
+                    "data",
+                  },
+                },
+                contextSupport = true,
+                insertTextMode = 1, -- asIs
+              },
+            },
+          }
         ''}
       '';
     };

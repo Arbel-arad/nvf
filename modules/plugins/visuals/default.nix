@@ -1,12 +1,5 @@
-{lib, ...}: let
-  inherit (lib.modules) mkRemovedOptionModule;
-in {
+{
   imports = [
-    (mkRemovedOptionModule ["vim" "visuals" "enable"] ''
-      As top-level toggles are being deprecated, you are encouraged to handle plugin
-      toggles under individual options.
-    '')
-
     ./blink-indent
     ./cellular-automaton
     ./cinnamon-nvim
@@ -14,11 +7,14 @@ in {
     ./highlight-undo
     ./hlargs-nvim
     ./indent-blankline
+    ./neoscroll-nvim
     ./nvim-cursorline
     ./nvim-scrollbar
     ./nvim-web-devicons
     ./rainbow-delimiters
-    ./tiny-devicons-auto-colors
+    ./satellite-nvim
     ./syntax-gaslighting
+    ./tiny-devicons-auto-colors
+    ./twilight-nvim
   ];
 }

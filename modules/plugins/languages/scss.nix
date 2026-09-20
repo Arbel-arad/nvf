@@ -7,7 +7,7 @@
   inherit (lib.options) mkEnableOption mkOption literalExpression;
   inherit (lib) genAttrs;
   inherit (lib.modules) mkIf mkMerge;
-  inherit (lib.types) enum coercedTo listOf;
+  inherit (lib.types) enum listOf;
   inherit (lib.nvim.types) mkGrammarOption;
 
   cfg = config.vim.languages.scss;
@@ -16,13 +16,7 @@
   servers = ["some-sass-language-server" "vscode-css-language-server" "emmet-ls"];
 
   defaultFormat = ["prettier"];
-  formats = ["prettier" "deno"];
-
-  formatType = listOf (coercedTo (enum ["prettierd"]) (_:
-    lib.warn
-    "vim.languages.scss.format.type: prettierd is deprecated, use prettier instead"
-    "prettier")
-  (enum formats));
+  formats = ["prettier" "deno" "injected"];
 
   defaultDiagnosticsProvider = ["stylelint"];
   diagnosticsProviders = ["stylelint"];
@@ -64,7 +58,7 @@ in {
         };
       type = mkOption {
         description = "SCSS/SASS formatter to use";
-        type = formatType;
+        type = listOf (enum formats);
         default = defaultFormat;
       };
     };

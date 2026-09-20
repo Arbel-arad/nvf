@@ -85,42 +85,46 @@ isMaximal: {
       env.enable = isMaximal;
 
       # Language modules that are not as common.
-      openscad.enable = false;
       arduino.enable = false;
       assembly.enable = false;
       astro.enable = false;
-      nu.enable = false;
+      awk.enable = false;
+      beancount.enable = false;
       csharp.enable = false;
-      julia.enable = false;
-      vala.enable = false;
-      scala.enable = false;
-      r.enable = false;
+      dart.enable = false;
+      elixir.enable = false;
+      fish.enable = false;
+      fluent.enable = false;
+      fsharp.enable = false;
+      gettext.enable = false;
       gleam.enable = false;
       glsl.enable = false;
-      dart.enable = false;
-      ocaml.enable = false;
-      elixir.enable = false;
       haskell.enable = false;
       hcl.enable = false;
-      ruby.enable = false;
-      fsharp.enable = false;
-      just.enable = false;
-      make.enable = false;
-      qml.enable = false;
       jinja.enable = false;
-      svelte.enable = false;
-      vue.enable = false;
-      tsx.enable = false;
-      liquid.enable = false;
-      tera.enable = false;
-      twig.enable = false;
-      gettext.enable = false;
-      fluent.enable = false;
       jq.enable = false;
-      fish.enable = false;
-      standard-ml.enable = false;
+      julia.enable = false;
+      just.enable = false;
+      liquid.enable = false;
+      lisp.enable = false;
+      make.enable = false;
+      nu.enable = false;
+      ocaml.enable = false;
+      openscad.enable = false;
       pug.enable = false;
+      qml.enable = false;
+      r.enable = false;
+      ruby.enable = false;
+      scala.enable = false;
+      standard-ml.enable = false;
+      svelte.enable = false;
+      tera.enable = false;
+      tsx.enable = false;
+      twig.enable = false;
+      vala.enable = false;
+      vue.enable = false;
       zsh.enable = false;
+      http.enable = false;
 
       # Nim LSP is broken on Darwin and therefore
       # should be disabled by default. Users may still enable
@@ -132,6 +136,9 @@ isMaximal: {
 
     visuals = {
       nvim-scrollbar.enable = isMaximal;
+      neoscroll-nvim.enable = false;
+      twilight-nvim.enable = false;
+      satellite-nvim.enable = false;
       nvim-web-devicons.enable = true;
       nvim-cursorline.enable = true;
       cinnamon-nvim.enable = true;
@@ -148,7 +155,13 @@ isMaximal: {
     statusline = {
       lualine = {
         enable = true;
-        theme = "catppuccin";
+
+        integrations.breadcrumbs = {
+          vanilla.enable = !isMaximal;
+          nvim-navic.enable = isMaximal;
+          navbuddy.enable = isMaximal;
+          lspsaga.enable = false;
+        };
       };
     };
 
@@ -199,8 +212,7 @@ isMaximal: {
     };
 
     minimap = {
-      minimap-vim.enable = false;
-      codewindow.enable = isMaximal; # lighter, faster, and uses lua for configuration
+      minimap-vim.enable = isMaximal;
     };
 
     dashboard = {
@@ -218,6 +230,9 @@ isMaximal: {
 
     utility = {
       ccc.enable = false;
+      smart-paste-nvim.enable = false;
+      guess-indent-nvim.enable = false;
+      auto-indent-nvim.enable = false;
       vim-wakatime.enable = false;
       diffview-nvim.enable = true;
       yanky-nvim.enable = false;
@@ -257,14 +272,11 @@ isMaximal: {
 
     ui = {
       borders.enable = true;
+      dropbar-nvim.enable = false;
       noice.enable = true;
       colorizer.enable = true;
       modes-nvim.enable = false; # the theme looks terrible with catppuccin
       illuminate.enable = true;
-      breadcrumbs = {
-        enable = isMaximal;
-        navbuddy.enable = isMaximal;
-      };
       smartcolumn = {
         enable = true;
         setupOpts.custom_colorcolumn = {

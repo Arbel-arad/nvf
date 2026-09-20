@@ -8,14 +8,14 @@
   inherit (lib.modules) mkIf mkMerge;
   inherit (lib.options) mkEnableOption mkOption literalExpression;
   inherit (lib.types) enum listOf;
-  inherit (lib.nvim.types) mkGrammarOption deprecatedSingleOrListOf;
+  inherit (lib.nvim.types) mkGrammarOption;
 
   cfg = config.vim.languages.toml;
   defaultServers = ["taplo"];
   servers = ["taplo" "tombi"];
 
   defaultFormat = ["taplo"];
-  formats = ["taplo" "tombi"];
+  formats = ["taplo" "tombi" "injected"];
 
   defaultDiagnosticsProvider = ["tombi"];
   diagnosticsProviders = ["tombi" "taplo"];
@@ -57,7 +57,7 @@ in {
         };
 
       type = mkOption {
-        type = deprecatedSingleOrListOf "vim.language.toml.format.type" (enum formats);
+        type = listOf (enum formats);
         default = defaultFormat;
         description = "TOML formatter to use.";
       };

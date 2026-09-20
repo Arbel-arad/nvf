@@ -8,7 +8,7 @@
   inherit (lib.modules) mkIf mkMerge;
   inherit (lib) genAttrs;
   inherit (lib.types) enum listOf;
-  inherit (lib.nvim.types) mkGrammarOption deprecatedSingleOrListOf;
+  inherit (lib.nvim.types) mkGrammarOption;
 
   cfg = config.vim.languages.cmake;
 
@@ -16,7 +16,7 @@
   servers = ["neocmakelsp"];
 
   defaultFormat = ["gersemi"];
-  formats = ["gersemi"];
+  formats = ["gersemi" "injected"];
 in {
   options.vim.languages.cmake = {
     enable = mkEnableOption "CMake language support";
@@ -55,7 +55,7 @@ in {
 
       type = mkOption {
         description = "CMake formatter to use";
-        type = deprecatedSingleOrListOf "vim.languages.cmake.format.type" (enum formats);
+        type = listOf (enum formats);
         default = defaultFormat;
       };
     };

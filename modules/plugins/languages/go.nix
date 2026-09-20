@@ -11,7 +11,7 @@
   inherit (lib.meta) getExe;
   inherit (lib) genAttrs;
   inherit (lib.types) enum package str listOf;
-  inherit (lib.nvim.types) mkGrammarOption deprecatedSingleOrListOf mkPluginSetupOption;
+  inherit (lib.nvim.types) mkGrammarOption mkPluginSetupOption;
   inherit (lib.nvim.dag) entryAfter;
 
   cfg = config.vim.languages.go;
@@ -20,7 +20,7 @@
   servers = ["gopls"];
 
   defaultFormat = ["gofmt"];
-  formats = ["gofmt" "gofumpt" "golines" "goimports"];
+  formats = ["gofmt" "gofumpt" "golines" "goimports" "injected"];
 
   defaultDebugger = "delve";
   debuggers = {
@@ -83,7 +83,7 @@ in {
         };
 
       type = mkOption {
-        type = deprecatedSingleOrListOf "vim.language.go.format.type" (enum formats);
+        type = listOf (enum formats);
         default = defaultFormat;
         description = "Go formatter to use";
       };
@@ -195,6 +195,7 @@ in {
           cfg.treesitter.gotmpl.package
         ];
         queries = [
+          # go template injections
           {
             type = "injections";
             filetypes = ["gotmpl"];
@@ -202,8 +203,38 @@ in {
             query = ''
               ((text) @injection.content
                 (#set! injection.language "${cfg.treesitter.gotmpl.injection}")
-                (#set! injection.combined)
-              )
+                (#set! injection.combined))
+            '';
+          }
+          # sqlx support
+          {
+            type = "injections";
+            filetypes = ["go"];
+            loadtype = "extends";
+            query = ''
+              (call_expression
+                function: (selector_expression
+                  operand: [
+                    (identifier) @_id
+                    (selector_expression
+                      field: (field_identifier) @_id)
+                  ]
+                  (#any-of? @_id "db" "tx" "transaction")
+                  field: (field_identifier) @_field
+                  (#any-of? @_field
+                    "Exec" "MustExec" "Query" "Queryx" "QueryRow" "QueryRowx" "Get" "Select" "NamedExec"
+                    "NamedQuery" "Prepare" "Preparex" "PrepareNamed" "ExecContext" "QueryContext" "QueryxContext"
+                    "QueryRowxContext" "GetContext" "SelectContext" "NamedExecContext" "NamedQueryContext"
+                    "PreparexContext" "PrepareNamedContext"))
+                arguments: (argument_list
+                  [
+                    (interpreted_string_literal
+                      (interpreted_string_literal_content) @injection.content
+                      (#set! injection.language "sql"))
+                    (raw_string_literal
+                      (raw_string_literal_content) @injection.content
+                      (#set! injection.language "sql"))
+                  ]))
             '';
           }
         ];

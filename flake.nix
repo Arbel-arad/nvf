@@ -29,23 +29,11 @@
     homeManagerModules = {
       nvf = import ./flake/modules/home-manager.nix {inherit lib inputs;};
       default = self.homeManagerModules.nvf;
-      neovim-flake =
-        lib.warn ''
-          'homeManagerModules.neovim-flake' has been deprecated, and will be removed
-          in a future release. Please use 'homeManagerModules.nvf' instead.
-        ''
-        self.homeManagerModules.nvf;
     };
 
     nixosModules = {
       nvf = import ./flake/modules/nixos.nix {inherit lib inputs;};
       default = self.nixosModules.nvf;
-      neovim-flake =
-        lib.warn ''
-          'nixosModules.neovim-flake' has been deprecated, and will be removed
-          in a future release. Please use 'nixosModules.nvf' instead.
-        ''
-        self.nixosModules.nvf;
     };
 
     darwinModules = {
@@ -180,7 +168,7 @@
 
   inputs = {
     ## Basic Inputs
-    nixpkgs.url = "https://channels.nixos.org/nixos-26.05/nixexprs.tar.xz";
+    nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz";
 
     flake-compat = {
       url = "git+https://git.lix.systems/lix-project/flake-compat.git";

@@ -8,7 +8,7 @@
   inherit (lib.modules) mkIf mkMerge;
   inherit (lib) genAttrs;
   inherit (lib.types) enum listOf;
-  inherit (lib.nvim.types) mkGrammarOption deprecatedSingleOrListOf;
+  inherit (lib.nvim.types) mkGrammarOption;
 
   cfg = config.vim.languages.ocaml;
 
@@ -16,7 +16,7 @@
   servers = ["ocaml-lsp"];
 
   defaultFormat = ["ocamlformat"];
-  formats = ["ocamlformat"];
+  formats = ["ocamlformat" "injected"];
 in {
   options.vim.languages.ocaml = {
     enable = mkEnableOption "OCaml language support";
@@ -49,7 +49,7 @@ in {
     format = {
       enable = mkEnableOption "OCaml formatting support (ocamlformat)" // {default = config.vim.languages.enableFormat;};
       type = mkOption {
-        type = deprecatedSingleOrListOf "vim.language.ocaml.format.type" (enum formats);
+        type = listOf (enum formats);
         default = defaultFormat;
         description = "OCaml formatter to use";
       };

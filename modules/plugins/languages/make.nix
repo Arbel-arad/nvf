@@ -8,12 +8,12 @@
   inherit (lib.types) listOf enum;
   inherit (lib) genAttrs;
   inherit (lib.modules) mkIf mkMerge;
-  inherit (lib.nvim.types) mkGrammarOption enumWithRename;
+  inherit (lib.nvim.types) mkGrammarOption;
 
   cfg = config.vim.languages.make;
 
   defaultFormat = ["mbake"];
-  formats = ["mbake"];
+  formats = ["mbake" "injected"];
 
   defaultDiagnosticsProvider = ["checkmake"];
   diagnosticsProviders = ["checkmake"];
@@ -40,12 +40,7 @@ in {
         };
       type = mkOption {
         description = "make formatter to use";
-        type = listOf (enumWithRename
-          "vim.languages.make.format.type"
-          formats
-          {
-            bake = "mbake";
-          });
+        type = listOf (enum formats);
         default = defaultFormat;
       };
     };

@@ -1,13 +1,15 @@
 {lib, ...}: let
-  inherit (lib.modules) mkRenamedOptionModule;
   inherit (lib.nvim.languages) mkEnable;
 in {
   imports = [
     ./angular.nix
     ./arduino.nix
+    ./asciidoc.nix
     ./asm.nix
     ./astro.nix
+    ./awk.nix
     ./bash.nix
+    ./beancount.nix
     ./clang.nix
     ./clojure.nix
     ./cmake.nix
@@ -30,14 +32,17 @@ in {
     ./hcl.nix
     ./helm.nix
     ./html.nix
+    ./http.nix
     ./java.nix
     ./jinja.nix
     ./jq.nix
     ./json.nix
+    ./json5.nix
     ./julia.nix
     ./just.nix
     ./kotlin.nix
     ./liquid.nix
+    ./lisp.nix
     ./lua.nix
     ./make.nix
     ./markdown.nix
@@ -77,9 +82,6 @@ in {
     ./yaml.nix
     ./zig.nix
     ./zsh.nix
-
-    # This is now a hard deprecation.
-    (mkRenamedOptionModule ["vim" "languages" "enableLSP"] ["vim" "lsp" "enable"])
   ];
 
   options.vim.languages = {

@@ -7,8 +7,8 @@
   inherit (lib.options) mkEnableOption mkOption literalExpression;
   inherit (lib.modules) mkIf mkMerge;
   inherit (lib) genAttrs elem;
-  inherit (lib.types) enum coercedTo listOf;
-  inherit (lib.nvim.types) mkGrammarOption deprecatedSingleOrListOf;
+  inherit (lib.types) enum listOf;
+  inherit (lib.nvim.types) mkGrammarOption;
 
   cfg = config.vim.languages.svelte;
 
@@ -16,19 +16,10 @@
   servers = ["svelte-language-server" "emmet-ls"];
 
   defaultFormat = ["prettier"];
-  formats = ["prettier" "biome" "biome-check" "biome-organize-imports" "deno"];
+  formats = ["prettier" "biome" "biome-check" "biome-organize-imports" "deno" "injected"];
 
   defaultDiagnosticsProvider = ["eslint_d"];
   diagnosticsProviders = ["eslint_d"];
-
-  formatType =
-    deprecatedSingleOrListOf
-    "vim.languages.svelte.format.type"
-    (coercedTo (enum ["prettierd"]) (_:
-      lib.warn
-      "vim.languages.svelte.format.type: prettierd is deprecated, use prettier instead"
-      "prettier")
-    (enum formats));
 in {
   options.vim.languages.svelte = {
     enable = mkEnableOption "Svelte language support";
@@ -68,7 +59,7 @@ in {
         };
 
       type = mkOption {
-        type = formatType;
+        type = listOf (enum formats);
         default = defaultFormat;
         description = "Svelte formatter to use";
       };

@@ -8,7 +8,7 @@
   inherit (lib.options) mkEnableOption mkOption literalExpression;
   inherit (lib.modules) mkIf mkMerge;
   inherit (lib.types) enum listOf;
-  inherit (lib.nvim.types) mkGrammarOption deprecatedSingleOrListOf;
+  inherit (lib.nvim.types) mkGrammarOption;
 
   cfg = config.vim.languages.nix;
 
@@ -16,7 +16,7 @@
   servers = ["nil" "nixd"];
 
   defaultFormat = ["alejandra"];
-  formats = ["alejandra" "nixfmt" "nixfmt-rs"];
+  formats = ["alejandra" "nixfmt" "nixfmt-rs" "injected"];
 
   defaultDiagnosticsProvider = ["statix" "deadnix"];
   diagnosticsProviders = ["statix" "deadnix"];
@@ -58,7 +58,7 @@ in {
 
       type = mkOption {
         description = "Nix formatter to use";
-        type = deprecatedSingleOrListOf "vim.language.nix.format.type" (enum formats);
+        type = listOf (enum formats);
         default = defaultFormat;
       };
     };
@@ -103,27 +103,31 @@ in {
             filetypes = ["nix"];
             loadtype = "extends";
             query = ''
-              ((binding
+              (binding
                 attrpath: (attrpath
                   (identifier) @_path)
-                  (#eq? @_path "query")
+                (#eq? @_path "query")
                 expression: [
                   (string_expression
                     ((string_fragment) @injection.content
-                    (#set! injection.language "query")))
+                      (#set! injection.language "query")
+                      (#set! injection.combined)))
                   (indented_string_expression
                     ((string_fragment) @injection.content
-                    (#set! injection.language "query")))
+                      (#set! injection.language "query")
+                      (#set! injection.combined)))
                   (apply_expression
                     argument: [
                       (string_expression
                         ((string_fragment) @injection.content
-                        (#set! injection.language "query")))
+                          (#set! injection.language "query")
+                          (#set! injection.combined)))
                       (indented_string_expression
                         ((string_fragment) @injection.content
-                        (#set! injection.language "query")))
+                          (#set! injection.language "query")
+                          (#set! injection.combined)))
                     ])
-                ]))
+                ])
             '';
           }
           # mkLuaInline, entryAnywhere, entryBefore, entryAfter -> lua
@@ -138,8 +142,8 @@ in {
                   (#any-of? @_func "mkLuaInline" "entryAnywhere"))
                 argument: (indented_string_expression
                   (string_fragment) @injection.content))
-              (#set! injection.language "lua")
-              (#set! injection.combined))
+                (#set! injection.language "lua")
+                (#set! injection.combined))
 
               ((apply_expression
                 function: (apply_expression
@@ -149,8 +153,8 @@ in {
                   argument: (_))
                 argument: (indented_string_expression
                   (string_fragment) @injection.content))
-              (#set! injection.language "lua")
-              (#set! injection.combined))
+                (#set! injection.language "lua")
+                (#set! injection.combined))
             '';
           }
         ];

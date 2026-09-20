@@ -1,6 +1,6 @@
 {
   imports = [
     ./config.nix
-    ./breadcrumbs.nix
+    ./twilight-nvim.nix
   ];
 }

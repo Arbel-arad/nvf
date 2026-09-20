@@ -11,7 +11,7 @@
   inherit (lib.lists) flatten;
   inherit (lib.meta) getExe;
   inherit (lib.generators) mkLuaInline toPretty;
-  inherit (lib.nvim.types) mkGrammarOption mkPluginSetupOption deprecatedSingleOrListOf enumWithRename;
+  inherit (lib.nvim.types) mkGrammarOption mkPluginSetupOption;
 
   cfg = config.vim.languages.java;
 
@@ -19,7 +19,7 @@
   servers = ["jdt-language-server" "jls"];
 
   defaultFormat = ["astyle"];
-  formats = ["astyle"];
+  formats = ["astyle" "injected"];
 
   defaultDebugger = ["jls"];
   dapConfigurations = {
@@ -103,12 +103,7 @@ in {
           defaultText = literalExpression "config.vim.lsp.enable";
         };
       servers = mkOption {
-        type = listOf (enumWithRename
-          "vim.languages.java.lsp.servers"
-          servers
-          {
-            jdtls = "jdt-language-server";
-          });
+        type = listOf (enum servers);
         default = defaultServers;
         description = "Java LSP server to use";
       };
@@ -138,9 +133,7 @@ in {
         };
 
       debugger = mkOption {
-        type =
-          deprecatedSingleOrListOf "vim.languages.java.dap.debugger"
-          (enum (attrNames dapConfigurations));
+        type = listOf (enum (attrNames dapConfigurations));
         default = defaultDebugger;
         description = ''
           Java debugger to use.
@@ -260,6 +253,12 @@ in {
           lazy.plugins.maven-nvim = {
             package = "maven-nvim";
             setupModule = "maven";
+            cmd = [
+              "Maven"
+              "MavenExec"
+              "MavenFavorites"
+              "MavenInit"
+            ];
             setupOpts = cfg.extensions.maven-nvim.setupOpts;
           };
         }
@@ -273,6 +272,12 @@ in {
           lazy.plugins.gradle-nvim = {
             package = "gradle-nvim";
             setupModule = "gradle";
+            cmd = [
+              "Gradle"
+              "GradleExec"
+              "GradleFavorites"
+              "GradleInit"
+            ];
             setupOpts = cfg.extensions.gradle-nvim.setupOpts;
           };
         }
