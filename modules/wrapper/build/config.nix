@@ -57,7 +57,7 @@
     # Get plugins built from source from self.packages
     # If adding a new plugin to be built from source, it must also be inherited
     # here.
-    inherit (inputs.self.packages.${pkgs.stdenv.system}) blink-cmp avante-nvim cord-nvim;
+    inherit (inputs.self.packages.${pkgs.stdenv.hostPlatform.system}) blink-cmp avante-nvim cord-nvim;
   };
 
   buildConfigPlugins = plugins:
@@ -121,7 +121,6 @@ in {
     vim.build.finalPackage = neovim;
 
     mnw = {
-      appName = lib.mkDefault "nvf";
       neovim = config.vim.package;
       initLua = config.vim.builtLuaConfigRC;
       luaFiles = config.vim.extraLuaFiles;

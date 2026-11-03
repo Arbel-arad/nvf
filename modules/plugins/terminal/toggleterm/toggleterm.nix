@@ -6,20 +6,14 @@
 }: let
   inherit (lib.options) mkOption mkEnableOption literalExpression;
   inherit (lib.types) nullOr enum package either int;
-  inherit (lib.modules) mkRenamedOptionModule;
   inherit (lib.nvim.types) mkPluginSetupOption luaInline;
   inherit (lib.generators) mkLuaInline;
-  inherit (config.vim.lib) mkMappingOption;
+  mkMappingOption = config.vim.lib.mkMappingOption "Toggleterm";
 in {
-  imports = [
-    (mkRenamedOptionModule ["vim" "terminal" "toggleterm" "direction"] ["vim" "terminal" "toggleterm" "setupOpts" "direction"])
-    (mkRenamedOptionModule ["vim" "terminal" "toggleterm" "enable_winbar"] ["vim" "terminal" "toggleterm" "setupOpts" "enable_winbar"])
-  ];
-
   options.vim.terminal.toggleterm = {
     enable = mkEnableOption "toggleterm as a replacement to built-in terminal command";
     mappings = {
-      open = mkMappingOption "Open toggleterm" "<c-t>";
+      open = mkMappingOption "Open" "<c-t>";
     };
 
     setupOpts = mkPluginSetupOption "ToggleTerm" {
@@ -98,7 +92,7 @@ in {
       };
 
       mappings = {
-        open = mkMappingOption "Open lazygit [toggleterm]" "<leader>gg";
+        open = mkMappingOption "Open lazygit" "<leader>gg";
       };
     };
   };

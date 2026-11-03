@@ -9,10 +9,10 @@
   inherit (lib) genAttrs;
   inherit (lib.generators) mkLuaInline;
   inherit (lib.options) mkEnableOption mkOption literalExpression;
-  inherit (config.vim.lib) mkMappingOption;
+  mkMappingOption = config.vim.lib.mkMappingOption "omnisharp-extended-lsp-nvim";
   inherit (lib.types) enum listOf;
   inherit (lib.modules) mkIf mkMerge;
-  inherit (lib.nvim.types) mkGrammarOption mkPluginSetupOption luaInline;
+  inherit (lib.nvim.types) mkGrammarOption mkPluginSetupOption;
   inherit (lib.nvim.lua) toLuaObject;
   inherit (lib.nvim.dag) entryAnywhere;
   inherit (lib.nvim.binds) addDescriptionsToMappings;
@@ -40,14 +40,14 @@ in {
 
         ::: {.note}
         This feature will not work if the .NET SDK is not installed.
-        Both `roslyn-ls` (with `roslyn-nvim`) and `csharp_ls` require the .NET SDK to function properly with Razor.
+        Both `roslyn-ls` and `csharp_ls` require the .NET SDK to function properly with Razor.
         Ensure that the .NET SDK is installed.
 
         Check for version compatibility for optimal performance.
         :::
 
         ::: {.warning}
-        At the moment, only `roslyn-ls`(with roslyn-nvim) provides full Razor support.
+        At the moment, only `roslyn-ls` provides full Razor support.
         `csharp_ls` is limited to `.cshtml` files.
         :::
       '';
@@ -77,33 +77,6 @@ in {
               type = enum ["auto" "roslyn" "off"];
               default = "auto";
             };
-            extensions.razor = {
-              enabled =
-                (mkEnableOption "Additional roslyn extensions (for example Roslynator/Razor)")
-                // {default = true;};
-              config = mkOption {
-                description = "Configuration for the additional roslyn extensions";
-                type = luaInline;
-                default = let
-                  pkg = pkgs.vscode-extensions.ms-dotnettools.csharp;
-                  pluginRoot = "${pkg}/share/vscode/extensions/ms-dotnettools.csharp";
-                  razorExtension = "${pluginRoot}/.razorExtension/Microsoft.VisualStudioCode.RazorExtension.dll";
-                  razorSourceGenerator = "${pluginRoot}/.razorExtension/Microsoft.CodeAnalysis.Razor.Compiler.dll";
-                  razorDesignTimePath = "${pluginRoot}/.razorExtension/Targets/Microsoft.NET.Sdk.Razor.DesignTime.targets";
-                in
-                  mkLuaInline ''
-                    function()
-                      return {
-                        path = '${razorExtension}',
-                        args = {
-                          '--razorSourceGenerator=${razorSourceGenerator}',
-                          '--razorDesignTimePath=${razorDesignTimePath}',
-                        },
-                      }
-                    end
-                  '';
-              };
-            };
           };
         };
         omnisharp-extended-lsp-nvim = {
@@ -117,10 +90,10 @@ in {
           mappings = let
             inherit (config.vim.lsp) mappings;
           in {
-            goToDefinition = mkMappingOption "Go to definition [omnisharp-extended-lsp-nvim]" mappings.goToDefinition;
-            goToType = mkMappingOption "Go to type [omnisharp-extended-lsp-nvim]" mappings.goToType;
-            listReferences = mkMappingOption "List references [omnisharp-extended-lsp-nvim]" mappings.listReferences;
-            listImplementations = mkMappingOption "List implementations [omnisharp-extended-lsp-nvim]" mappings.listImplementations;
+            goToDefinition = mkMappingOption "Go to definition" mappings.goToDefinition;
+            goToType = mkMappingOption "Go to type" mappings.goToType;
+            listReferences = mkMappingOption "List references" mappings.listReferences;
+            listImplementations = mkMappingOption "List implementations" mappings.listImplementations;
           };
         };
         csharpls-extended-lsp-nvim = {
@@ -184,15 +157,6 @@ in {
 
     (mkIf cfg.lsp.enable {
       vim = {
-        luaConfigRC.razorFileTypes = ''
-          -- Set unknown file types!
-          vim.filetype.add {
-            extension = {
-              razor = "razor",
-              cshtml = "razor",
-            },
-          }
-        '';
         lsp = {
           presets = genAttrs cfg.lsp.servers (_: {enable = true;});
           servers = genAttrs cfg.lsp.servers (_: {
@@ -222,7 +186,15 @@ in {
       vim = {
         startPlugins = ["roslyn-nvim"];
         pluginRC.roslyn-nvim = entryAnywhere "require('roslyn').setup(${toLuaObject cfg.extensions.roslyn-nvim.setupOpts})";
-        lsp.servers.roslyn-ls.enable = false;
+        lsp.servers = {
+          roslyn-ls.enable = false;
+
+          # NOTE: `roslyn-nvim` uses `roslyn` instead of `roslyn-ls`
+          roslyn = {
+            enable = true;
+            cmd = config.vim.lsp.servers.roslyn-ls.cmd;
+          };
+        };
         extraPackages = with pkgs; [roslyn-ls];
       };
     })

@@ -9,6 +9,7 @@
   inherit (lib) genAttrs;
   inherit (lib.types) enum listOf;
   inherit (lib.nvim.types) mkGrammarOption mkPluginSetupOption;
+  inherit (lib.nvim.lua) toLuaObject;
 
   cfg = config.vim.languages.lua;
 
@@ -21,12 +22,6 @@
   defaultDiagnosticsProvider = ["luacheck"];
   diagnosticsProviders = ["luacheck" "selene"];
 in {
-  imports = [
-    (lib.mkRemovedOptionModule ["vim" "languages" "lua" "lsp" "neodev"] ''
-      neodev has been replaced by lazydev
-    '')
-  ];
-
   options.vim.languages.lua = {
     enable = mkEnableOption "Lua language support";
     treesitter = {
@@ -125,6 +120,7 @@ in {
     (mkIf cfg.extensions.lazydev.enable {
       vim.lazy.plugins.lazydev-nvim = {
         package = "lazydev-nvim";
+        beforeSetup = "vim.list_extend(require(\"lazydev.lsp\").supported_clients, ${toLuaObject servers})";
         setupModule = "lazydev";
         ft = "lua";
         inherit (cfg.extensions.lazydev) setupOpts;

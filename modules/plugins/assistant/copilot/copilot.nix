@@ -4,20 +4,14 @@
   lib,
   ...
 }: let
-  inherit (lib.modules) mkRenamedOptionModule;
   inherit (lib.options) mkEnableOption mkOption;
-  inherit (lib.types) nullOr str enum float;
+  inherit (lib.types) str enum float;
   inherit (lib.nvim.types) mkPluginSetupOption;
-  inherit (config.vim.lib) mkMappingOption;
+  inherit (lib.meta) getExe;
+  mkMappingOption = config.vim.lib.mkMappingOption "Copilot";
 
   cfg = config.vim.assistant.copilot;
 in {
-  imports = [
-    (mkRenamedOptionModule ["vim" "assistant" "copilot" "panel"] ["vim" "assistant" "copilot" "setupOpts" "panel"])
-    (mkRenamedOptionModule ["vim" "assistant" "copilot" "copilotNodeCommand"] ["vim" "assistant" "copilot" "setupOpts" "copilot_node_command"])
-    (mkRenamedOptionModule ["vim" "assistant" "copilot" "copilotNodePackage"] ["vim" "assistant" "copilot" "setupOpts" "copilot_node_command"])
-  ];
-
   options.vim.assistant.copilot = {
     enable = mkEnableOption "GitHub Copilot AI assistant";
     cmp.enable = mkEnableOption "nvim-cmp integration for GitHub Copilot";
@@ -30,6 +24,16 @@ in {
           The command that will be executed to initiate nodejs for GitHub Copilot.
           Recommended to leave as default.
         '';
+      };
+      server = {
+        custom_server_filepath = mkOption {
+          type = str;
+          default = getExe pkgs.copilot-language-server;
+          description = ''
+            Path to the GitHub Copilot language server executable.
+            Recommended to leave as default.
+          '';
+        };
       };
       panel = {
         enabled = mkEnableOption "Completion Panel" // {default = !cfg.cmp.enable;};

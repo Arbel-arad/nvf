@@ -523,9 +523,9 @@
       },
       "branch": "master",
       "submodules": false,
-      "revision": "808ba31cde89aec8833e9789f5e04557cd31c9e1",
-      "url": "https://github.com/Bekaboo/dropbar.nvim/archive/808ba31cde89aec8833e9789f5e04557cd31c9e1.tar.gz",
-      "hash": "sha256-S9TD5PkHKHoo2jfjOXkQoNtyr/PNtR/eljXB+8PtGU8="
+      "revision": "f7c6fa21e2a7c32576e7a1791774a3736987f467",
+      "url": "https://github.com/Bekaboo/dropbar.nvim/archive/f7c6fa21e2a7c32576e7a1791774a3736987f467.tar.gz",
+      "hash": "sha256-bxlbejtkSwKUQ0+H/+6k83hqUeBq29iHanpVxv7+cZk="
     },
     "elixir-tools-nvim": {
       "type": "Git",
@@ -2560,12 +2560,12 @@
       },
       "pre_releases": false,
       "version_upper_bound": null,
-      "release_prefix": null,
+      "release_prefix": "prettier-plugin-svelte@",
       "submodules": false,
-      "version": "v3.5.2",
-      "revision": "44dda204c660fafbf0e5c6c71b6f6c3c4423adce",
-      "url": "https://api.github.com/repos/sveltejs/prettier-plugin-svelte/tarball/refs/tags/v3.5.2",
-      "hash": "sha256-DNhg4L6F63f91Cr/GMWKIuDQrqRKjeUy7agcILFyh+I="
+      "version": "prettier-plugin-svelte@4.1.1",
+      "revision": "7566d5cd23dc877c432a24330a2a96f3a40ec025",
+      "url": "https://api.github.com/repos/sveltejs/prettier-plugin-svelte/tarball/refs/tags/prettier-plugin-svelte@4.1.1",
+      "hash": "sha256-xgK0LO5iXJRLxS3t0SHmYlrUdB7OQ7IlZWfXm0c1DNo="
     },
     "project-nvim": {
       "type": "Git",
